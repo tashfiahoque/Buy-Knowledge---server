@@ -24,7 +24,7 @@ const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PW}@cluster0.
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 client.connect(err => {
     const booksCollection = client.db("user").collection("users");
-
+    const ordersCollection = client.db("user").collection("orders");
     //get books from db
     app.get('/books', (req, res) => {
         booksCollection.find()
@@ -70,6 +70,27 @@ client.connect(err => {
         booksCollection.findOneAndDelete({ _id: id })
             .then(documents => res.send(!!documents.value))
     })
+
+    // add order to db
+
+    app.post('/addOrder', (req, res) => {
+        const order = req.body;
+        ordersCollection.insertOne(order)
+            .then(result => {
+                res.send(result.insertedCount > 0)
+            })
+    })
+
+    // load orderInfo from db
+
+    app.get('/orderInfo', (req, res) => {
+        ordersCollection.find({ email: req.query.email })
+            .toArray((err, documents) => {
+                res.send(documents)
+            })
+
+    })
+
 });
 
 
