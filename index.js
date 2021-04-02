@@ -41,7 +41,6 @@ client.connect(err => {
         booksCollection.insertOne(newBook)
             .then(result => {
                 res.send(result.insertedCount > 0)
-                console.log(result.insertedCount)
             })
     })
 
